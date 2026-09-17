@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from app.core.database import AsyncSessionLocal, engine, Base
 from app.models.user import User  
 from app.core.init_db import init_admin_user
+from app.api.v1.endpoints.auth import router as auth_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,6 +30,8 @@ async def lifespan(app: FastAPI):
     print("The app is safely closed.")
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
 
 @app.get("/")
 def read_root():
