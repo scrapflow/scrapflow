@@ -1,8 +1,9 @@
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from app.core.database import engine, Base
+from app.core.database import AsyncSessionLocal, engine, Base
 from app.models.user import User  
+from app.core.init_db import init_admin_user
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -11,6 +12,10 @@ async def lifespan(app: FastAPI):
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+        print("Tables created successfully.")
+        
+        async with AsyncSessionLocal() as db:
+            await init_admin_user(db)
     except OSError as e:  
         print("ERROR: Cannot access the PostgreSQL database.")
         print("Check if the DB is running (port 5432).")
