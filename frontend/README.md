@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Please donate to help this project
+[![Sustain this project](https://shields.io)](https://www.patreon.com/cw/petrican)
+
+
 ## Getting Started
 
 First, run the development server:
