@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str
+    ADMIN_USER: str
+    ADMIN_EMAIL: str
+    ADMIN_PASSWORD: str
 
     @computed_field
     def DATABASE_URL(self) -> str:
