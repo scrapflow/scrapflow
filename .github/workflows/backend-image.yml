@@ -1,9 +1,9 @@
-name: Build and Push Docker Image
+name: Build and Push Backend to Docker Hub
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-docker-image-and-push:
