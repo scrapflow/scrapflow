@@ -39,4 +39,9 @@ To RUN the BE application you run:
 
 #RUN using Docker
 
-....
+The docker images can be retrieved from
+
+`petrican/scrapflow-backend`
+`petrican/scrapflow-frontend`
+
+
