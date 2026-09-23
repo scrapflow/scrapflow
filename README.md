@@ -45,3 +45,9 @@ The docker images can be retrieved from
 `petrican/scrapflow-frontend`
 
 
+## Running the tests for the BE
+
+# From the backend directory
+
+`python -m pythest -v`
+
