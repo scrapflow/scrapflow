@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     ADMIN_USER: str
     ADMIN_EMAIL: str
     ADMIN_PASSWORD: str
+    SECURITY_ALGORITHM: str
+    SECURITY_ACCESS_TOKEN_EXPIRE_MINUTES: int
+    SECURITY_REFRESH_TOKEN_EXPIRE_DAYS: int
+    SECURITY_SECRET_KEY: str
 
     @computed_field
     def DATABASE_URL(self) -> str:

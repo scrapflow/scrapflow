@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 # Imports from the database and models
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
-from app.core.security import verify_password
+from app.core.security import create_access_token, create_refresh_token, verify_password
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -15,12 +15,21 @@ class LoginRequest(BaseModel):
     username: str = Field(..., description="Username of the user or their email address")
     password: str = Field(..., description="Password of the user")
 
+class LoginResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    must_change_password: bool
+    
 # Dependency to get the database session
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
 
-@router.post("/login")
+@router.post(
+    "/login",
+    response_model=LoginResponse,
+)
 async def login(
     login_data: LoginRequest,  # FastAPI will automatically validate the request body against this schema
     db: AsyncSession = Depends(get_db)
@@ -51,8 +60,12 @@ async def login(
             detail="Inactive account."
         )
         
+    access_token = create_access_token(user.id)
+    refresh_token = create_refresh_token(user.id)
+
     return {
-        "message": "Login successful!", 
-        "username": user.username,
-        "email": user.email
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "must_change_password": user.must_change_password,
     }
