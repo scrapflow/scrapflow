@@ -1,25 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from fastapi.responses import JSONResponse
 
 # Imports from the database and models
 from app.core.database import AsyncSessionLocal
 from app.models.user import User
+from app.core.config import settings
 from app.core.security import create_access_token, create_refresh_token, verify_password
+from app.schemas.auth import LoginRequest, LoginResponse
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
-
-# Schema Pydantic that defines the expected structure of the login request body
-class LoginRequest(BaseModel):
-    username: str = Field(..., description="Username of the user or their email address")
-    password: str = Field(..., description="Password of the user")
-
-class LoginResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    must_change_password: bool
     
 # Dependency to get the database session
 async def get_db():
@@ -28,10 +19,10 @@ async def get_db():
 
 @router.post(
     "/login",
-    response_model=LoginResponse,
+    responses={200: {"model": LoginResponse}},
 )
 async def login(
-    login_data: LoginRequest,  # FastAPI will automatically validate the request body against this schema
+    login_data: LoginRequest,
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -62,10 +53,22 @@ async def login(
         
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
+    
+    response = JSONResponse(
+        content={
+            "access_token": access_token,
+            "token_type": "bearer",
+            "must_change_password": user.must_change_password,
+        }
+    )
+    
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,          
+        secure=True if settings.ENVIRONMENT == "production" else False, 
+        max_age=7 * 24 * 60 * 60, 
+        path="/api/v1/auth",           
+    )
 
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer",
-        "must_change_password": user.must_change_password,
-    }
+    return response
