@@ -4,7 +4,9 @@ from fastapi import FastAPI
 from app.core.database import AsyncSessionLocal, engine, Base
 from app.models.user import User  
 from app.core.init_db import init_admin_user
+
 from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.refresh import router as refresh_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
+app.include_router(refresh_router, prefix="/api/v1", tags=["Authentication Refresh"])
 
 @app.get("/")
 def read_root():

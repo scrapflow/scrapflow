@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     SECURITY_ACCESS_TOKEN_EXPIRE_MINUTES: int
     SECURITY_REFRESH_TOKEN_EXPIRE_DAYS: int
     SECURITY_SECRET_KEY: str
+    ENVIRONMENT: str = "development"
 
     @computed_field
     def DATABASE_URL(self) -> str:
