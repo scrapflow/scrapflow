@@ -34,7 +34,7 @@ pytest==9.1.1
 python-dotenv==1.2.3
 python-jose==3.5.0
 python-multipart==0.0.32
-pywin32==312
+pywin32==312; sys_platform == 'win32'
 pyzipper==0.4.0
 requests==2.34.2
 rsa==4.9.1
