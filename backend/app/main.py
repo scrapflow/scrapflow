@@ -1,9 +1,10 @@
 import os
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from app.core.database import AsyncSessionLocal, engine, Base
 from app.models.user import User  
 from app.core.init_db import init_admin_user
+from app.core.deps import get_current_user
 
 from app.api.v1.endpoints.auth import router as auth_router
 from app.api.v1.endpoints.refresh import router as refresh_router
@@ -37,5 +38,5 @@ app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
 app.include_router(refresh_router, prefix="/api/v1", tags=["Authentication Refresh"])
 
 @app.get("/")
-def read_root():
+def read_root(current_user: User = Depends(get_current_user)):
     return {"Message": "Testing it works!"}

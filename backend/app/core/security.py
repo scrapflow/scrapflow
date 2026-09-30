@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
 import bcrypt
 from app.core.config import settings
-from jose import JWTError, jwt
+
+import jwt
 
 def get_password_hash(password: str) -> str:
     """Encrypt the password."""
@@ -57,6 +58,7 @@ def create_refresh_token(user_id: int) -> str:
     )
 
 
+
 def decode_token(token: str) -> dict:
     try:
         return jwt.decode(
@@ -64,5 +66,9 @@ def decode_token(token: str) -> dict:
             settings.SECURITY_SECRET_KEY,
             algorithms=[settings.SECURITY_ALGORITHM],
         )
-    except JWTError:
+    except jwt.ExpiredSignatureError:
+        # Prindem explicit expirarea dacă vrei să trimiți un mesaj custom sau să returnezi {}
         return {}
+    except jwt.PyJWTError:
+        return {}
+

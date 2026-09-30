@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from sqlalchemy import select
 from app.core.database import get_db
 from app.models.user import User
 from app.core.security import create_access_token, create_refresh_token, decode_token
