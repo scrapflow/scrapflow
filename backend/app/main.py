@@ -4,7 +4,10 @@ from fastapi import FastAPI, Depends
 from app.core.database import AsyncSessionLocal, engine, Base
 from app.models.user import User  
 from app.core.init_db import init_admin_user
+from app.core.config import settings
 from app.core.deps import get_current_user
+
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.endpoints.auth import router as auth_router
 from app.api.v1.endpoints.refresh import router as refresh_router
@@ -33,6 +36,25 @@ async def lifespan(app: FastAPI):
     print("The app is safely closed.")
 
 app = FastAPI(lifespan=lifespan)
+
+# Cors settings
+if settings.ENVIRONMENT == "production":
+    origins = [
+        "https://example.com",
+    ]
+else:
+    origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,  
+    allow_methods=["*"],  
+    allow_headers=["*"],   
+)
+# End Cors settings
 
 app.include_router(auth_router, prefix="/api/v1", tags=["Authentication"])
 app.include_router(refresh_router, prefix="/api/v1", tags=["Authentication Refresh"])

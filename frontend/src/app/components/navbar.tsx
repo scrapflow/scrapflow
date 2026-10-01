@@ -1,18 +1,44 @@
 import Link from "next/link";
+import { logoutAction } from "../actions/auth";
+import { isAuthenticated } from "../lib/auth";
 
-export default function Navbar() {
+function AuthControl({
+    authenticated,
+    mobile = false,
+}: {
+    authenticated: boolean;
+    mobile?: boolean;
+}) {
+    const className = mobile
+        ? "w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm"
+        : "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm";
+
+    if (authenticated) {
+        return (
+            <form action={logoutAction}>
+                <button type="submit" className={className}>
+                    Logout
+                </button>
+            </form>
+        );
+    }
+
+    return (
+        <Link href="/login" className={className}>
+            Login
+        </Link>
+    );
+}
+
+export default async function Navbar() {
+    const authenticated = await isAuthenticated();
+
     return (
         <nav className="bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16 items-center">
 
-                    <div className="flex-shrink-0 flex items-center">
-                        <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
-                            Scrap<span className="text-blue-600">Flow</span>
-                        </Link>
-                    </div>
-
-                    {/* Meniu Desktop (Ascuns pe mobil) */}
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-8">
                         <Link href="/" className="text-sm font-medium text-blue-600 dark:text-blue-500">
                             Home
@@ -29,9 +55,7 @@ export default function Navbar() {
                     </div>
 
                     <div className="hidden md:flex items-center">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm">
-                            Login
-                        </button>
+                        <AuthControl authenticated={authenticated} />
                     </div>
 
 
@@ -68,15 +92,11 @@ export default function Navbar() {
                                     Contact
                                 </Link>
                                 <div className="pt-4 pb-2 border-t border-gray-200 dark:border-gray-800 px-3">
-                                    <button className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm">
-                                        Login
-                                    </button>
+                                    <AuthControl authenticated={authenticated} mobile />
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
             </div>
         </nav>
